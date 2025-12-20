@@ -20,4 +20,10 @@ Route::prefix('/api/v1')->group(function () {
     Route::patch('/invoices/{id}/cancelled', [\app\Http\Controllers\v1\InvoiceController::class, 'setCancelled'])->name('invoices.setCancelled');
     Route::patch('/invoices/{id}/overdue', [\app\Http\Controllers\v1\InvoiceController::class, 'setOverdue'])->name('invoices.setOverdue');
     Route::delete('/invoices/{id}', [\app\Http\Controllers\v1\InvoiceController::class, 'destroy'])->name('invoices.destroy');
+
+    Route::get('/worked-hours', [\app\Http\Controllers\v1\WorkedHoursController::class, 'index'])->name('workedHours.index');
+    Route::get('/worked-hours/{id}', [\app\Http\Controllers\v1\WorkedHoursController::class, 'show'])->name('workedHours.show');
+    Route::post('/worked-hours', [\app\Http\Controllers\v1\WorkedHoursController::class, 'store'])->name('workedHours.store');
+    Route::put('/worked-hours/{id}', [\app\Http\Controllers\v1\WorkedHoursController::class, 'update'])->name('workedHours.update');
+    Route::delete('/worked-hours/{id}', [\app\Http\Controllers\v1\WorkedHoursController::class, 'destroy'])->name('workedHours.destroy');
 });

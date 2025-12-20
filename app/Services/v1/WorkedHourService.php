@@ -2,11 +2,17 @@
 
 namespace app\Services\v1;
 
-use App\Models\WorkedHours;
+use App\Models\WorkedHour;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
-class WorkedHoursService
+class WorkedHourService
 {
+    /***
+     * @param Carbon $startTime
+     * @param Carbon $stopTime
+     * @return array{hours: int, minutes: int, seconds: int}
+     */
     public function calculateTotalWorkedTime(Carbon $startTime, Carbon $stopTime): array
     {
         $duration = $stopTime->diff($startTime);
@@ -18,22 +24,39 @@ class WorkedHoursService
         ];
     }
 
+    /***
+     * @param array $workedTime
+     * @param int $hourlyRateCents
+     * @return int
+     */
     public function calculateTotalCents(array $workedTime, int $hourlyRateCents): int
     {
         return (int)round(($workedTime['hours'] + ($workedTime['minutes'] / 60) + ($workedTime['seconds'] / 3600)) * $hourlyRateCents);
     }
 
-    public function createWorkedHours(array $data): WorkedHours
+    /***
+     * @return Collection
+     */
+    public function listWorkedHours(): Collection
+    {
+        return WorkedHour::query()->get();
+    }
+
+    /***
+     * @param array $data
+     * @return WorkedHour
+     */
+    public function createWorkedHours(array $data): WorkedHour
     {
         $totalWorkedTime = $this->calculateTotalWorkedTime(
             Carbon::parse($data['start_time']),
             Carbon::parse($data['stop_time'])
         );
 
-        $hourlyRateCents = $data['rate_cents'] ?? auth()->user()->settings()->hourly_rate_cents;
+        $hourlyRateCents = $data['hourly_rate_cents'] ?? auth()->user()->settings()->hourly_rate_cents;
         $totalCents = $this->calculateTotalCents($totalWorkedTime, $hourlyRateCents);
 
-        return WorkedHours::create([
+        return WorkedHour::create([
             'user_id' => $data['user_id'],
             'company_id' => $data['company_id'],
             'hourly_rate_cents' => $hourlyRateCents,
@@ -47,7 +70,12 @@ class WorkedHoursService
         ]);
     }
 
-    public function updateWorkedHours(WorkedHours $workedHours, array $data): bool
+    /***
+     * @param WorkedHour $workedHours
+     * @param array $data
+     * @return bool
+     */
+    public function updateWorkedHours(WorkedHour $workedHours, array $data): bool
     {
         if ($this->isWorkedHoursTimeUpdated($workedHours, $data)) {
             $totalWorkedTime = $this->calculateTotalWorkedTime(
@@ -55,7 +83,7 @@ class WorkedHoursService
                 Carbon::parse($data['stop_time'])
             );
 
-            $hourlyRateCents = $data['rate_cents'] ?? $workedHours->hourly_rate_cents;
+            $hourlyRateCents = $data['hourly_rate_cents'] ?? $workedHours->hourly_rate_cents;
             $totalCents = $this->calculateTotalCents($totalWorkedTime, $hourlyRateCents);
 
             $data['hours_worked'] = $totalWorkedTime['hours'];
@@ -67,12 +95,21 @@ class WorkedHoursService
         return $workedHours->update($data);
     }
 
-    public function deleteWorkedHours(WorkedHours $workedHours): bool
+    /***
+     * @param WorkedHour $workedHours
+     * @return bool
+     */
+    public function deleteWorkedHours(WorkedHour $workedHours): bool
     {
         return $workedHours->delete();
     }
 
-    public function isWorkedHoursTimeUpdated(WorkedHours $workedHours, array $data): bool
+    /***
+     * @param WorkedHour $workedHours
+     * @param array $data
+     * @return bool
+     */
+    public function isWorkedHoursTimeUpdated(WorkedHour $workedHours, array $data): bool
     {
         if (isset($data['start_time']) && $data['start_time'] !== $workedHours->start_time) {
             return true;

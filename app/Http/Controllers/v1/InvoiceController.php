@@ -7,23 +7,24 @@ use app\Http\Requests\v1\CreateInvoiceRequest;
 use app\Http\Requests\v1\UpdateInvoiceRequest;
 use App\Models\Invoice;
 use app\Services\v1\InvoiceService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
     public function __construct(private readonly InvoiceService $service) {}
 
-    public function index(Request $request): \Illuminate\Http\JsonResponse
+    public function index(Request $request): JsonResponse
     {
         return response()->json($this->service->listInvoices($request->all()));
     }
 
-    public function show(Invoice $invoice): \Illuminate\Http\JsonResponse
+    public function show(Invoice $invoice): JsonResponse
     {
         return response()->json($invoice->toArray());
     }
 
-    public function store(CreateInvoiceRequest $request): \Illuminate\Http\JsonResponse
+    public function store(CreateInvoiceRequest $request): JsonResponse
     {
         $invoice = $this->service->createInvoice($request->validated()->toArray());
 
@@ -33,7 +34,7 @@ class InvoiceController extends Controller
         ], 201);
     }
 
-    public function update(UpdateInvoiceRequest $request, Invoice $invoice): \Illuminate\Http\JsonResponse
+    public function update(UpdateInvoiceRequest $request, Invoice $invoice): JsonResponse
     {
         $this->service->updateInvoice($invoice, $request->validated()->toArray());
 
@@ -43,7 +44,7 @@ class InvoiceController extends Controller
         ]);
     }
 
-    public function setPaid(Invoice $invoice): \Illuminate\Http\JsonResponse
+    public function setPaid(Invoice $invoice): JsonResponse
     {
         $result = $this->service->changeInvoiceStatus($invoice, \App\Enums\InvoiceStatusEnum::PAID);
 
@@ -54,7 +55,7 @@ class InvoiceController extends Controller
         return response()->json(['message' => 'Cannot change status of a finalized invoice'], 400);
     }
 
-    public function setCancelled(Invoice $invoice): \Illuminate\Http\JsonResponse
+    public function setCancelled(Invoice $invoice): JsonResponse
     {
         $result = $this->service->changeInvoiceStatus($invoice, \App\Enums\InvoiceStatusEnum::CANCELLED);
 
@@ -65,7 +66,7 @@ class InvoiceController extends Controller
         return response()->json(['message' => 'Cannot change status of a finalized invoice'], 400);
     }
 
-    public function setOverdue(Invoice $invoice): \Illuminate\Http\JsonResponse
+    public function setOverdue(Invoice $invoice): JsonResponse
     {
         $result = $this->service->changeInvoiceStatus($invoice, \App\Enums\InvoiceStatusEnum::OVERDUE);
 
@@ -76,7 +77,7 @@ class InvoiceController extends Controller
         return response()->json(['message' => 'Cannot change status of a finalized invoice'], 400);
     }
 
-    public function destroy(Invoice $invoice): \Illuminate\Http\JsonResponse
+    public function destroy(Invoice $invoice): JsonResponse
     {
         $this->service->deleteInvoice($invoice);
 

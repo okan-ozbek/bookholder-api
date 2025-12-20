@@ -4,6 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -56,13 +59,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function settings(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function settings(): HasOne
     {
         return $this->hasOne(UserSetting::class);
     }
 
-    public function freelanceTimes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function workedHours(): HasMany
     {
-        return $this->hasMany(FreelanceTime::class);
+        return $this->hasMany(WorkedHour::class);
     }
 }

@@ -4,7 +4,7 @@ namespace app\Services\v1;
 
 use App\Enums\InvoiceStatusEnum;
 use App\Models\Invoice;
-use App\Models\WorkedHours;
+use App\Models\WorkedHour;
 use Illuminate\Support\Collection;
 
 class InvoiceService
@@ -20,7 +20,7 @@ class InvoiceService
      */
     public function totalAmount(Invoice $invoice): float
     {
-        $workedHours = WorkedHours::where('company_id', $invoice->company_id)
+        $workedHours = WorkedHour::where('company_id', $invoice->company_id)
             ->where('user_id', $invoice->client_id)
             ->where(function ($query) use ($invoice) {
                 $query->whereBetween('start_time', [$invoice->from_time, $invoice->to_time])
@@ -77,15 +77,6 @@ class InvoiceService
     public function deleteInvoice(Invoice $invoice): bool
     {
         return $invoice->delete();
-    }
-
-    /***
-     * @param int $id
-     * @return Invoice|null
-     */
-    public function findInvoiceById(int $id): ?Invoice
-    {
-        return Invoice::find($id);
     }
 
     /***

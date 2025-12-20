@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -35,12 +36,13 @@ class UserSetting extends Model
 {
     protected $fillable = [
         'user_id',
-        'preffered_currency',
-        'invoice_template',
+        'invoice_prefix',
         'default_payment_terms',
+        'currency',
+        'tax_rate',
     ];
 
-    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
