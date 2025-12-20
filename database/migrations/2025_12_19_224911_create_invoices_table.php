@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->string('status');
-            $table->timestamp('from_time');
-            $table->timestamp('to_time');
-            $table->timestamp('due_time');
+            $table->dateTime('from_time');
+            $table->dateTime('to_time');
+            $table->dateTime('due_time');
             $table->timestamps();
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('client_id')->references('id')->on('companies')->onDelete('cascade');

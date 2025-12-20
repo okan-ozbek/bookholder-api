@@ -11,14 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('freelance_times', static function (Blueprint $table) {
+        Schema::create('worked_hours', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->timestamp('start_time');
-            $table->timestamp('stop_time');
+            $table->integer('hourly_rate_cents');
+            $table->dateTime('start_time');
+            $table->dateTime('stop_time');
             $table->integer('hours_worked');
-            $table->string('description')->nullable();
+            $table->integer('minutes_worked');
+            $table->integer('seconds_worked');
+            $table->integer('total_cents');
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
@@ -30,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('freelance_times');
+        Schema::dropIfExists('worked_hours');
     }
 };
